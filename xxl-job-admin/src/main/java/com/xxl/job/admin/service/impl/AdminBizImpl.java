@@ -1,5 +1,6 @@
 package com.xxl.job.admin.service.impl;
 
+import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 import com.xxl.job.admin.core.model.XxlJobInfo;
 import com.xxl.job.admin.core.model.XxlJobLog;
 import com.xxl.job.admin.core.thread.JobTriggerPoolHelper;
@@ -19,8 +20,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author xuxueli 2017-07-27 21:54:20
@@ -69,8 +73,47 @@ public class AdminBizImpl implements AdminBiz {
                 for (int i = 0; i < childJobIds.length; i++) {
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
                     if (childJobId > 0) {
+                        XxlJobInfo childJobInfo = xxlJobInfoDao.loadById(childJobId);
+                        List<Integer> parentJobIdList = Optional
+                                .ofNullable(xxlJobInfoDao.selectJobInfoWithChildJobId(String.valueOf(childJobId), childJobInfo.getJobGroup()))
+                                .orElse(new ArrayList<>());
+                        List<XxlJobLog> parentJobLogList = new ArrayList<>();
+                        for (Integer jobId : parentJobIdList) {
+                            if (jobId.compareTo(xxlJobInfo.getId()) != 0) {
+                                XxlJobLog parentLog = xxlJobLogDao.selectJobLogByJobIdAndFlowId(jobId, log.getFlowId());
+                                if (parentLog != null) {
+                                    parentJobLogList.add(parentLog);
+                                }
+                            }
+                        }
+                        if (parentJobIdList.size() != parentJobLogList.size()) {
+                            callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg3"),
+                                    (i+1),
+                                    childJobIds.length,
+                                    childJobIds[i]);
+                            continue;
+                        }
 
-                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null);
+                        boolean parentsAllComplete = true;
+                        for (XxlJobLog parentJobLog : parentJobLogList) {
+                            if (parentJobLog.getHandleCode() != IJobHandler.SUCCESS.getCode()) {
+                                parentsAllComplete = false;
+                            }
+                        }
+                        if (!parentsAllComplete) {
+                            String msg = parentJobLogList
+                                    .stream()
+                                    .map(ele -> "jobId:" + ele.getJobId() + ",flowId:" + ele.getFlowId() + ",handleCode:" + ele.getHandleCode())
+                                    .collect(Collectors.joining(";<br>"));
+                            callbackMsg += MessageFormat.format(I18nUtil.getString("jobconf_callback_child_msg4"),
+                                    (i+1),
+                                    childJobIds.length,
+                                    childJobIds[i],
+                                    msg);
+                            continue;
+                        }
+
+                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null,null);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
                         // add msg
@@ -105,7 +148,11 @@ public class AdminBizImpl implements AdminBiz {
 
         // success, save log
         log.setHandleTime(new Date());
-        log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
+        if (handleCallbackParam.getExecuteResult().getCode() != IJobHandler.SUCCESS.getCode() && log.getExecutorFailRetryCount() != 0) {
+            log.setHandleCode(IJobHandler.FAIL_NEED_RETRY.getCode());
+        } else {
+            log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
+        }
         log.setHandleMsg(handleMsg.toString());
         xxlJobLogDao.updateHandleInfo(log);
 

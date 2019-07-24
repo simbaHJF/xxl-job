@@ -39,6 +39,8 @@ public class XxlJobInfo {
 	private long triggerLastTime;	// 上次调度时间
 	private long triggerNextTime;	// 下次调度时间
 
+	private String parentJobId;		//路由策略为'与声明父任务同一节点'时的父jobId
+
 
 	public int getId() {
 		return id;
@@ -214,5 +216,13 @@ public class XxlJobInfo {
 
 	public void setTriggerNextTime(long triggerNextTime) {
 		this.triggerNextTime = triggerNextTime;
+	}
+
+	public String getParentJobId() {
+		return parentJobId;
+	}
+
+	public void setParentJobId(String parentJobId) {
+		this.parentJobId = parentJobId;
 	}
 }

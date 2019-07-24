@@ -17,7 +17,8 @@ public enum ExecutorRouteStrategyEnum {
     LEAST_RECENTLY_USED(I18nUtil.getString("jobconf_route_lru"), new ExecutorRouteLRU()),
     FAILOVER(I18nUtil.getString("jobconf_route_failover"), new ExecutorRouteFailover()),
     BUSYOVER(I18nUtil.getString("jobconf_route_busyover"), new ExecutorRouteBusyover()),
-    SHARDING_BROADCAST(I18nUtil.getString("jobconf_route_shard"), null);
+    SHARDING_BROADCAST(I18nUtil.getString("jobconf_route_shard"), null),
+    SAME_WITH_ASSIGN_PARENT(I18nUtil.getString("jobconf_route_same_with_assign_parent"),new ExecutorRouteSameWithAssignParent());
 
     ExecutorRouteStrategyEnum(String title, ExecutorRouter router) {
         this.title = title;
@@ -36,6 +37,9 @@ public enum ExecutorRouteStrategyEnum {
 
     public static ExecutorRouteStrategyEnum match(String name, ExecutorRouteStrategyEnum defaultItem){
         if (name != null) {
+            if (name.startsWith(SAME_WITH_ASSIGN_PARENT.getTitle())) {
+                return SAME_WITH_ASSIGN_PARENT;
+            }
             for (ExecutorRouteStrategyEnum item: ExecutorRouteStrategyEnum.values()) {
                 if (item.name().equals(name)) {
                     return item;

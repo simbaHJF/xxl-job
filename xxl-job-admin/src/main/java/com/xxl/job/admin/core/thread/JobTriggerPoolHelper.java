@@ -1,5 +1,6 @@
 package com.xxl.job.admin.core.thread;
 
+import com.xxl.job.admin.core.model.XxlJobLog;
 import com.xxl.job.admin.core.trigger.TriggerTypeEnum;
 import com.xxl.job.admin.core.trigger.XxlJobTrigger;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class JobTriggerPoolHelper {
     /**
      * add trigger
      */
-    public void addTrigger(final int jobId, final TriggerTypeEnum triggerType, final int failRetryCount, final String executorShardingParam, final String executorParam) {
+    public void addTrigger(final int jobId, final TriggerTypeEnum triggerType, final int failRetryCount, final String executorShardingParam, final String executorParam, XxlJobLog retryJobLog) {
 
         // choose thread pool
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
@@ -73,7 +74,7 @@ public class JobTriggerPoolHelper {
 
                 try {
                     // do trigger
-                    XxlJobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam);
+                    XxlJobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam,retryJobLog);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 } finally {
@@ -122,8 +123,8 @@ public class JobTriggerPoolHelper {
      *          null: use job param
      *          not null: cover job param
      */
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
-        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam);
+    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam,XxlJobLog retryJobLog) {
+        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam,retryJobLog);
     }
 
     public static void toStop() {

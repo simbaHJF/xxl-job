@@ -84,6 +84,17 @@ public class XxlJobServiceImpl implements XxlJobService {
 		if (GlueTypeEnum.BEAN==GlueTypeEnum.match(jobInfo.getGlueType()) && (jobInfo.getExecutorHandler()==null || jobInfo.getExecutorHandler().trim().length()==0) ) {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("system_please_input")+"JobHandler") );
 		}
+		if (ExecutorRouteStrategyEnum.SAME_WITH_ASSIGN_PARENT == ExecutorRouteStrategyEnum.match(jobInfo.getExecutorRouteStrategy(),null)){
+			if (jobInfo.getParentJobId() == null || jobInfo.getParentJobId().length() == 0) {
+				return new ReturnT<String>(ReturnT.FAIL_CODE, "路由策略为与声明父任务一致时,父任务jobId不能为空");
+			} else {
+				XxlJobInfo parentJobInfo = xxlJobInfoDao.loadById(Integer.valueOf(jobInfo.getParentJobId()));
+				if (parentJobInfo==null) {
+					return new ReturnT<String>(ReturnT.FAIL_CODE,"路由策略为与声明父任务一致时,父任务jobId:" + parentJobInfo.getParentJobId() + ",对应job不存在");
+				}
+			}
+			jobInfo.setExecutorRouteStrategy(jobInfo.getExecutorBlockStrategy() + ":" + jobInfo.getParentJobId());
+		}
 
 		// fix "\r" in shell
 		if (GlueTypeEnum.GLUE_SHELL==GlueTypeEnum.match(jobInfo.getGlueType()) && jobInfo.getGlueSource()!=null) {

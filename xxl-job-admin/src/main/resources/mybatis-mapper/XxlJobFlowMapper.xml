@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxl.job.admin.dao.XxlJobFlowDao">
+
+
+
+
+
+    <select id="selectToLockTableXxlJobFlow">
+        SELECT 1
+        FROM xxl_job_flow FOR UPDATE
+    </select>
+
+    <select id="selectMaxIdOfTableXxlJobFlow" resultType="int">
+        SELECT max(id)
+        FROM xxl_job_user
+    </select>
+
+    <insert id="insertFlow" parameterType="com.xxl.job.admin.core.model.XxlJobFlow" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO xxl_job_flow (start_job_id) VALUES (#{startJobId})
+	</insert>
+
+</mapper>

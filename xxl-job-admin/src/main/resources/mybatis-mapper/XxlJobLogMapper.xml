@@ -24,6 +24,7 @@
 	    <result column="handle_msg" property="handleMsg" />
 
 		<result column="alarm_status" property="alarmStatus" />
+		<result column="flow_id" property="flowId" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -41,7 +42,8 @@
 		t.handle_time,
 		t.handle_code,
 		t.handle_msg,
-		t.alarm_status
+		t.alarm_status,
+		t.flow_id
 	</sql>
 	
 	<select id="pageList" resultMap="XxlJobLog">
@@ -116,6 +118,12 @@
 		WHERE t.id = #{id}
 	</select>
 
+    <select id="selectJobLogByJobIdAndFlowId" parameterType="java.lang.Long" resultMap="XxlJobLog">
+        SELECT <include refid="Base_Column_List" />
+        FROM xxl_job_log AS t
+        WHERE t.job_id = #{jobId} and t.flow_id = #{flowId}
+    </select>
+
 	
 	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobLog" useGeneratedKeys="true" keyProperty="id" >
 		INSERT INTO xxl_job_log (
@@ -123,13 +131,15 @@
 			`job_id`,
 			`trigger_time`,
 			`trigger_code`,
-			`handle_code`
+			`handle_code`,
+			`flow_id`
 		) VALUES (
 			#{jobGroup},
 			#{jobId},
 			#{triggerTime},
 			#{triggerCode},
 			#{handleCode}
+			#{flowId}
 		);
 		<!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
 			SELECT LAST_INSERT_ID() 

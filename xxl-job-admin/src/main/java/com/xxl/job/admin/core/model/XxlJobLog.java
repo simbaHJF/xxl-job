@@ -34,6 +34,9 @@ public class XxlJobLog {
 	// alarm info
 	private int alarmStatus;
 
+	//流id
+	private int flowId;
+
 	public long getId() {
 		return id;
 	}
@@ -154,4 +157,11 @@ public class XxlJobLog {
 		this.alarmStatus = alarmStatus;
 	}
 
+	public int getFlowId() {
+		return flowId;
+	}
+
+	public void setFlowId(int flowId) {
+		this.flowId = flowId;
+	}
 }

@@ -4,6 +4,7 @@ import com.xxl.job.admin.dao.XxlJobGroupDao;
 import com.xxl.job.admin.dao.XxlJobInfoDao;
 import com.xxl.job.admin.dao.XxlJobLogDao;
 import com.xxl.job.admin.dao.XxlJobRegistryDao;
+import com.xxl.job.admin.service.FlowService;
 import com.xxl.job.core.biz.AdminBiz;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +57,8 @@ public class XxlJobAdminConfig implements InitializingBean{
     private JavaMailSender mailSender;
     @Resource
     private DataSource dataSource;
+    @Resource
+    private FlowService flowService;
 
 
     public String getI18n() {
@@ -98,4 +101,7 @@ public class XxlJobAdminConfig implements InitializingBean{
         return dataSource;
     }
 
+    public FlowService getFlowService() {
+        return flowService;
+    }
 }

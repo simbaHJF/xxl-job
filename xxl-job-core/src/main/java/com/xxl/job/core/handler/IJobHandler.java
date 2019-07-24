@@ -16,6 +16,8 @@ public abstract class IJobHandler {
 	public static final ReturnT<String> FAIL = new ReturnT<String>(500, null);
 	/** fail timeout */
 	public static final ReturnT<String> FAIL_TIMEOUT = new ReturnT<String>(502, null);
+	/** fail need retry*/
+	public static final ReturnT<String> FAIL_NEED_RETRY = new ReturnT<String>(555, null);
 
 
 	/**

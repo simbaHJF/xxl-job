@@ -45,5 +45,6 @@ public interface XxlJobInfoDao {
 
 	public int scheduleUpdate(XxlJobInfo xxlJobInfo);
 
+	public List<Integer> selectJobInfoWithChildJobId(@Param("childJobId") String childJobId,@Param("jobGroup") int jobGroup);
 
 }
