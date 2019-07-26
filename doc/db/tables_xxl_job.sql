@@ -48,6 +48,7 @@ CREATE TABLE `xxl_job_log` (
   `handle_code` int(11) NOT NULL COMMENT '执行-状态',
   `handle_msg` text COMMENT '执行-日志',
   `alarm_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '告警状态：0-默认、1-无需告警、2-告警成功、3-告警失败',
+  `flow_id` int(11) NOT NULL COMMENT '工作流编号',
   PRIMARY KEY (`id`),
   KEY `I_trigger_time` (`trigger_time`),
   KEY `I_handle_code` (`handle_code`)
@@ -98,6 +99,13 @@ CREATE TABLE `xxl_job_lock` (
   `lock_name` varchar(50) NOT NULL COMMENT '锁名称',
   PRIMARY KEY (`lock_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `xxl_job_flow` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `start_job_id` int(11) NOT NULL COMMENT '起始job的id',
+  `add_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务流编号表';
 
 
 INSERT INTO `xxl_job_group`(`id`, `app_name`, `title`, `order`, `address_type`, `address_list`) VALUES (1, 'xxl-job-executor-sample', '示例执行器', 1, 0, NULL);
