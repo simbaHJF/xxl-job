@@ -224,11 +224,11 @@
 		WHERE id = #{id}
 	</update>
 
-	<select id="selectJobInfoWithChildJobId" parameterType="java.util.HashMap" resultMap="XxlJobInfo">
+	<select id="selectJobInfoWithChildJobId" parameterType="java.util.HashMap" resultType="int">
 		SELECT id
 		FROM xxl_job_info AS t
 		WHERE t.job_group = #{jobGroup} and
-			t.child_jobid like '%#{childJobId}%'
+			t.child_jobid like CONCAT('%',#{childJobId},'%')
 	</select>
 
 </mapper>

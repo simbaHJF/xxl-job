@@ -13,9 +13,9 @@ import org.apache.ibatis.annotations.Mapper;
 public interface XxlJobFlowDao {
 
 
-    int selectToLockTableXxlJobFlow();
+    /*int selectToLockTableXxlJobFlow();
 
-    int selectMaxIdOfTableXxlJobFlow();
+    int selectMaxIdOfTableXxlJobFlow();*/
 
     int insertFlow(XxlJobFlow xxlJobFlow);
 }

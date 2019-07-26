@@ -21,7 +21,7 @@ public class FlowServiceImpl implements FlowService {
     @Override
     @Transactional
     public int createNewFlow(int startJobId) {
-        xxlJobFlowDao.selectToLockTableXxlJobFlow();
+        /*xxlJobFlowDao.selectToLockTableXxlJobFlow();*/
         XxlJobFlow xxlJobFlow = new XxlJobFlow();
         xxlJobFlow.setStartJobId(startJobId);
         xxlJobFlowDao.insertFlow(xxlJobFlow);

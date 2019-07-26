@@ -472,6 +472,7 @@ $(function() {
 		$('#updateModal .form select[name=executorRouteStrategy] option[value='+ row.executorRouteStrategy +']').prop('selected', true);
 		$("#updateModal .form input[name='executorHandler']").val( row.executorHandler );
 		$("#updateModal .form textarea[name='executorParam']").val( row.executorParam );
+		$("#updateModal .form textarea[name='parentJobId']").val( row.parentJobId );
         $("#updateModal .form input[name='childJobId']").val( row.childJobId );
 		$('#updateModal .form select[name=executorBlockStrategy] option[value='+ row.executorBlockStrategy +']').prop('selected', true);
 		$('#updateModal .form select[name=glueType] option[value='+ row.glueType +']').prop('selected', true);

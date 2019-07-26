@@ -37,7 +37,7 @@ public enum ExecutorRouteStrategyEnum {
 
     public static ExecutorRouteStrategyEnum match(String name, ExecutorRouteStrategyEnum defaultItem){
         if (name != null) {
-            if (name.startsWith(SAME_WITH_ASSIGN_PARENT.getTitle())) {
+            if (name.startsWith(SAME_WITH_ASSIGN_PARENT.name())) {
                 return SAME_WITH_ASSIGN_PARENT;
             }
             for (ExecutorRouteStrategyEnum item: ExecutorRouteStrategyEnum.values()) {

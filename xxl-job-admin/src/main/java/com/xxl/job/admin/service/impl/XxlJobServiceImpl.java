@@ -46,6 +46,23 @@ public class XxlJobServiceImpl implements XxlJobService {
 
 		// page list
 		List<XxlJobInfo> list = xxlJobInfoDao.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+		Optional.ofNullable(list)
+				.orElse(new ArrayList<>())
+				.stream()
+				.filter(ele -> {
+					ExecutorRouteStrategyEnum cur = ExecutorRouteStrategyEnum.match(ele.getExecutorRouteStrategy(), null);
+					if (cur == ExecutorRouteStrategyEnum.SAME_WITH_ASSIGN_PARENT) {
+						return true;
+					} else {
+						return false;
+					}
+				})
+				.forEach(ele -> {
+					String str = ele.getExecutorRouteStrategy();
+					String[] arr = str.split(":");
+					ele.setExecutorRouteStrategy(arr[0]);
+					ele.setParentJobId(arr[1]);
+				});
 		int list_count = xxlJobInfoDao.pageListCount(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 		
 		// package result
@@ -93,7 +110,7 @@ public class XxlJobServiceImpl implements XxlJobService {
 					return new ReturnT<String>(ReturnT.FAIL_CODE,"路由策略为与声明父任务一致时,父任务jobId:" + parentJobInfo.getParentJobId() + ",对应job不存在");
 				}
 			}
-			jobInfo.setExecutorRouteStrategy(jobInfo.getExecutorBlockStrategy() + ":" + jobInfo.getParentJobId());
+			jobInfo.setExecutorRouteStrategy(jobInfo.getExecutorRouteStrategy() + ":" + jobInfo.getParentJobId());
 		}
 
 		// fix "\r" in shell

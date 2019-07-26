@@ -79,11 +79,9 @@ public class AdminBizImpl implements AdminBiz {
                                 .orElse(new ArrayList<>());
                         List<XxlJobLog> parentJobLogList = new ArrayList<>();
                         for (Integer jobId : parentJobIdList) {
-                            if (jobId.compareTo(xxlJobInfo.getId()) != 0) {
-                                XxlJobLog parentLog = xxlJobLogDao.selectJobLogByJobIdAndFlowId(jobId, log.getFlowId());
-                                if (parentLog != null) {
-                                    parentJobLogList.add(parentLog);
-                                }
+                            XxlJobLog parentLog = xxlJobLogDao.selectJobLogByJobIdAndFlowId(jobId, log.getFlowId());
+                            if (parentLog != null) {
+                                parentJobLogList.add(parentLog);
                             }
                         }
                         if (parentJobIdList.size() != parentJobLogList.size()) {
@@ -96,8 +94,9 @@ public class AdminBizImpl implements AdminBiz {
 
                         boolean parentsAllComplete = true;
                         for (XxlJobLog parentJobLog : parentJobLogList) {
-                            if (parentJobLog.getHandleCode() != IJobHandler.SUCCESS.getCode()) {
+                            if (parentJobLog.getHandleCode() != IJobHandler.SUCCESS.getCode() && parentJobLog.getJobId() != xxlJobInfo.getId()) {
                                 parentsAllComplete = false;
+                                break;
                             }
                         }
                         if (!parentsAllComplete) {
@@ -113,7 +112,7 @@ public class AdminBizImpl implements AdminBiz {
                             continue;
                         }
 
-                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null,null);
+                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null,null,log);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
                         // add msg

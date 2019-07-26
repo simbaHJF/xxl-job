@@ -7,10 +7,10 @@
 
 
 
-    <select id="selectToLockTableXxlJobFlow">
+    <!--<select id="selectToLockTableXxlJobFlow" resultType="int">
         SELECT 1
         FROM xxl_job_flow FOR UPDATE
-    </select>
+    </select>-->
 
     <select id="selectMaxIdOfTableXxlJobFlow" resultType="int">
         SELECT max(id)

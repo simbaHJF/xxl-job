@@ -96,7 +96,7 @@ public class JobScheduleHelper {
                                     long nextTime = cronExpression.getNextValidTimeAfter(new Date()).getTime();
 
                                     // 1、trigger
-                                    JobTriggerPoolHelper.trigger(jobInfo.getId(), TriggerTypeEnum.CRON, -1, null, null,null);
+                                    JobTriggerPoolHelper.trigger(jobInfo.getId(), TriggerTypeEnum.CRON, -1, null, null,null,null);
                                     logger.debug(">>>>>>>>>>> xxl-job, shecule push trigger : jobId = " + jobInfo.getId() );
 
                                     // 2、fresh next
@@ -251,7 +251,7 @@ public class JobScheduleHelper {
                             // do trigger
                             for (int jobId: ringItemData) {
                                 // do trigger
-                                JobTriggerPoolHelper.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null,null);
+                                JobTriggerPoolHelper.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null,null,null);
                             }
                             // clear
                             ringItemData.clear();

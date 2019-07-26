@@ -38,7 +38,7 @@ public class XxlJobTrigger {
      *          null: use job param
      *          not null: cover job param
      */
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam,XxlJobLog retryJobLog) {
+    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam,XxlJobLog retryJobLog,XxlJobLog parentJobLog) {
         // load data
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
         if (jobInfo == null) {
@@ -65,13 +65,13 @@ public class XxlJobTrigger {
                 && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
                 && shardingParam==null) {
             for (int i = 0; i < group.getRegistryList().size(); i++) {
-                processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size(),retryJobLog);
+                processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size(),retryJobLog,parentJobLog);
             }
         } else {
             if (shardingParam == null) {
                 shardingParam = new int[]{0, 1};
             }
-            processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1],retryJobLog);
+            processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1],retryJobLog,parentJobLog);
         }
 
     }
@@ -93,8 +93,9 @@ public class XxlJobTrigger {
      * @param index                     sharding index
      * @param total                     sharding index
      * @param retryJobLog                 如果TriggerTypeEnum是重试,则沿用之前的log,而不是新建log
+     * @param parentJobLog              父jobLog 如果有的话,否则为null
      */
-    private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total,XxlJobLog retryJobLog){
+    private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total,XxlJobLog retryJobLog,XxlJobLog parentJobLog){
 
         // param
         ExecutorBlockStrategyEnum blockStrategy = ExecutorBlockStrategyEnum.match(jobInfo.getExecutorBlockStrategy(), ExecutorBlockStrategyEnum.SERIAL_EXECUTION);  // block strategy
@@ -102,7 +103,14 @@ public class XxlJobTrigger {
         String shardingParam = (ExecutorRouteStrategyEnum.SHARDING_BROADCAST==executorRouteStrategyEnum)?String.valueOf(index).concat("/").concat(String.valueOf(total)):null;
 
         //0.  generate flow_id
-        int flowId = XxlJobAdminConfig.getAdminConfig().getFlowService().createNewFlow(jobInfo.getId());
+        int flowId;
+        if (triggerType != TriggerTypeEnum.PARENT && triggerType != TriggerTypeEnum.RETRY) {
+            flowId = XxlJobAdminConfig.getAdminConfig().getFlowService().createNewFlow(jobInfo.getId());
+        } else if (triggerType == TriggerTypeEnum.PARENT) {
+            flowId = parentJobLog.getFlowId();
+        } else {
+            flowId = retryJobLog.getFlowId();
+        }
 
         // 1、save or reuse log
         XxlJobLog jobLog;

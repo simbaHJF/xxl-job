@@ -118,7 +118,7 @@
 		WHERE t.id = #{id}
 	</select>
 
-    <select id="selectJobLogByJobIdAndFlowId" parameterType="java.lang.Long" resultMap="XxlJobLog">
+    <select id="selectJobLogByJobIdAndFlowId" parameterType="java.util.HashMap" resultMap="XxlJobLog">
         SELECT <include refid="Base_Column_List" />
         FROM xxl_job_log AS t
         WHERE t.job_id = #{jobId} and t.flow_id = #{flowId}
@@ -138,7 +138,7 @@
 			#{jobId},
 			#{triggerTime},
 			#{triggerCode},
-			#{handleCode}
+			#{handleCode},
 			#{flowId}
 		);
 		<!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
